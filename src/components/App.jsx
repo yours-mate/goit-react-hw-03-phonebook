@@ -6,13 +6,28 @@ import { Filter } from "./Filter/Filter";
 
 export class App extends Component {
   state = {
-  contacts: [
-    {id: 'id-1', name: 'Rosie Simpson', number: '459-12-56'},
-    {id: 'id-2', name: 'Hermione Kline', number: '443-89-12'},
-    {id: 'id-3', name: 'Eden Clements', number: '645-17-79'},
-    {id: 'id-4', name: 'Annie Copeland', number: '227-91-26'},
-  ],
-  filter: '',
+    contacts: [
+      { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
+      { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
+      { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
+      { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
+    ],
+    filter: '',
+  }
+
+  componentDidMount() {
+    const contacts = localStorage.getItem('contacts');
+    const parsedContacts = JSON.parse(contacts);
+    if (parsedContacts) {
+    this.setState({ contacts: parsedContacts });
+
+    }
+  }
+
+   componentDidUpdate(prevProps, prevState) {
+    if (prevState.contacts !== this.state.contacts) {
+      localStorage.setItem('contacts', JSON.stringify(this.state.contacts) );
+    }
   }
   
   handleFormSubmit = e => {
@@ -36,9 +51,8 @@ export class App extends Component {
         }
       ));
       document.getElementById("form").reset();
-}
+    }
   }
-
 
   handleFilterState = (evt) => {
     this.setState({ filter: evt.target.value });
@@ -50,15 +64,15 @@ export class App extends Component {
   }
 
   handleBtnDeleteClick = (e) => {
-    const id = e.target.name;
-    this.handleDelete(id);
+    const targetId = e.target.name;
+    this.handleDelete(targetId);
   }
 
-  handleDelete = (id) => {
-    const contactToDelete = this.state.contacts.map(c => c.id).indexOf(id);
-    this.state.contacts.splice(contactToDelete, 1);
-    this.setState(prevState => ({
-      contacts: prevState.contacts,
+  handleDelete = (targetId) => {
+    this.setState(({contacts}) => ({
+      contacts: contacts.filter(({id}) => 
+        id !== targetId
+      )
     }))
   }
 
